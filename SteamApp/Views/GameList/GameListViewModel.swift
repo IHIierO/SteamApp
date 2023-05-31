@@ -53,13 +53,14 @@ final class GameListViewModel: ObservableObject {
             let cashedGame = Games(context: cache.viewContext)
             cashedGame.appid = game.appid
             cashedGame.name = game.name
-            
         }
         
         try? cache.viewContext.save()
     }
     
     func saveGamesToHastTable(games: [SteamGame]) {
+        steamGamesHashTable.removeAll()
+        
         for game in games {
             let firstLetter = String(game.name.prefix(1)).lowercased()
 
@@ -90,16 +91,17 @@ final class GameListViewModel: ObservableObject {
     }
     
     func searchResults(searchText: String) -> [SteamGame] {
-            if searchText.isEmpty {
-                return paginatedGames
+        if searchText.isEmpty {
+            return paginatedGames
+        } else {
+            
+            let firstLetter = String(searchText.prefix(1)).lowercased()
+            
+            if let gamesStartingWithKeyword = steamGamesHashTable[firstLetter] {
+                return gamesStartingWithKeyword.filter { $0.name.lowercased().contains(searchText.lowercased()) }
             } else {
-                let firstLetter = String(searchText.prefix(1)).lowercased()
-                
-                if let gamesStartingWithKeyword = steamGamesHashTable[firstLetter] {
-                    return gamesStartingWithKeyword.filter { $0.name.lowercased().contains(searchText.lowercased()) }
-                } else {
-                    return []
-                }
+                return []
             }
         }
+    }
 }

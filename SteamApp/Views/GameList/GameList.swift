@@ -15,8 +15,10 @@ struct GameList: View {
         if viewModel.paginatedGames.isEmpty {
             ProgressView()
                 .onAppear{
-                    print("First paginate")
-                    viewModel.fetchGames(from: dataController.container)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        viewModel.fetchGames(from: dataController.container)
+                    }
+                    
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         viewModel.paginateGames(30)
                     }
@@ -33,7 +35,6 @@ struct GameList: View {
                     if viewModel.isPaginate {
                         ProgressView()
                             .onAppear {
-                                print("Second paginate")
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                     viewModel.paginateGames(30)
                                 }
@@ -41,6 +42,11 @@ struct GameList: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
                 }
+            }
+            .refreshable {
+                dataController.deleteAll()
+                viewModel.fetchGames(from: dataController.container)
+                viewModel.paginatedGames.removeAll()
             }
             .searchable(text: $searchText) {
                 ForEach(viewModel.searchResults(searchText: searchText), id: \.appid) { result in
