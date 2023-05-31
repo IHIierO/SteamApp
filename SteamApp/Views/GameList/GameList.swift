@@ -11,16 +11,26 @@ struct GameList: View {
     @EnvironmentObject var dataController: DataController
     @StateObject var viewModel = GameListViewModel()
     @State var searchText: String = ""
+    @State var refresh: Bool = false
     var body: some View {
         if viewModel.paginatedGames.isEmpty {
             ProgressView()
                 .onAppear{
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        viewModel.fetchGames(from: dataController.container)
-                    }
                     
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        viewModel.paginateGames(30)
+                    if refresh {
+                        viewModel.refreshGameList()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            viewModel.paginateGames(30)
+                        }
+                    } else {
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            viewModel.fetchGames(from: dataController.container)
+                        }
+                        
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            viewModel.paginateGames(30)
+                        }
                     }
                 }
         } else {
@@ -44,8 +54,9 @@ struct GameList: View {
                 }
             }
             .refreshable {
-                dataController.deleteAll()
-                viewModel.fetchGames(from: dataController.container)
+                refresh = true
+//                dataController.deleteAll()
+//                viewModel.fetchGames(from: dataController.container)
                 viewModel.paginatedGames.removeAll()
             }
             .searchable(text: $searchText) {

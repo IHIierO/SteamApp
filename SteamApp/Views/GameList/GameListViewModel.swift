@@ -47,6 +47,10 @@ final class GameListViewModel: ObservableObject {
         }
     }
     
+    func refreshGameList() {
+        steamGames = steamGames.shuffled()
+    }
+    
     func saveGamesToCache(for cache: NSPersistentContainer, from games: [SteamGame]) {
         
         for game in games {
