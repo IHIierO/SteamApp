@@ -2,7 +2,7 @@
 
 <p align="center">
 
-<img src="https://github.com/IHIierO/SteamApp/assets/108677019/00b6039b-efb3-4dc4-8d17-36e6af9f19be" width="300" height="600">
+<img src="https://github.com/IHIierO/SteamApp/assets/108677019/7053d63c-3705-4e2e-b198-78a487eedddb" width="300" height="600">
 
 </p>
 
