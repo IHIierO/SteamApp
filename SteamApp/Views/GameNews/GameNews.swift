@@ -31,7 +31,7 @@ struct GameNews: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             } else {
                 List {
-                    ForEach(viewModel.randomNews, id: \.gid) { newsItem in
+                    ForEach(gameNews.newsitems, id: \.gid) { newsItem in
                         
                         Button {
                             isPresented.toggle()
@@ -65,7 +65,7 @@ struct GameNews: View {
                     }
                 }
                 .refreshable {
-                    viewModel.refreshNews()
+                    viewModel.fetchGameNews(for: appid)
                 }
             }
         } else {

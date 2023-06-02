@@ -35,22 +35,19 @@ struct GameList: View {
                 }
         } else {
             List {
-                Section {
                     ForEach(viewModel.searchResults(searchText: searchText), id: \.appid) { game in
                         NavigationLink(destination: GameNews(appid: game.appid)) {
                             GameListCell(game: game)
                         }
                     }
-                } footer: {
-                    if viewModel.isPaginate {
-                        ProgressView()
-                            .onAppear {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    viewModel.paginateGames(30)
-                                }
+                if viewModel.isPaginate {
+                    ProgressView()
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                viewModel.paginateGames(30)
                             }
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
             .refreshable {
@@ -59,11 +56,9 @@ struct GameList: View {
 //                viewModel.fetchGames(from: dataController.container)
                 viewModel.paginatedGames.removeAll()
             }
-            .searchable(text: $searchText) {
-                ForEach(viewModel.searchResults(searchText: searchText), id: \.appid) { result in
-                    Text("Are you looking for \(result.name)?").searchCompletion(result.name)
-                        .foregroundColor(.black)
-                }
+            .searchable(text: $searchText)
+            .onChange(of: searchText) { _ in
+                viewModel.isPaginate = false
             }
         }
     }

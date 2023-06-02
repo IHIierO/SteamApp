@@ -19,20 +19,20 @@ final class GameListViewModel: ObservableObject {
     func fetchGames(from cache: NSPersistentContainer) {
         
         let request: NSFetchRequest<Games> = Games.fetchRequest()
-               do {
-                   let cachedGames = try cache.viewContext.fetch(request)
-                   if !cachedGames.isEmpty {
-                       DispatchQueue.main.async { [weak self] in
-                           guard let strongSelf = self else {return}
-                           let games = cachedGames.map { SteamGame(appid: $0.appid, name: $0.name ?? "") }
-                           strongSelf.steamGames = games
-                           strongSelf.saveGamesToHastTable(games: games)
-                       }
-                       return
-                   }
-               } catch {
-                   print("Error fetching cached games: \(error)")
-               }
+        do {
+            let cachedGames = try cache.viewContext.fetch(request)
+            if !cachedGames.isEmpty {
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else {return}
+                    let games = cachedGames.map { SteamGame(appid: $0.appid, name: $0.name ?? "") }
+                    strongSelf.steamGames = games
+                    strongSelf.saveGamesToHastTable(games: games)
+                }
+                return
+            }
+        } catch {
+            print("Error fetching cached games: \(error)")
+        }
         
         RequestManager.shared.fetchGameList { [weak self] result in
             guard let strongSelf = self else {return}
@@ -67,11 +67,11 @@ final class GameListViewModel: ObservableObject {
         
         for game in games {
             let firstLetter = String(game.name.prefix(1)).lowercased()
-
+            
             if steamGamesHashTable[firstLetter] == nil {
                 steamGamesHashTable[firstLetter] = []
             }
-
+            
             steamGamesHashTable[firstLetter]?.append(game)
         }
     }
@@ -98,7 +98,6 @@ final class GameListViewModel: ObservableObject {
         if searchText.isEmpty {
             return paginatedGames
         } else {
-            
             let firstLetter = String(searchText.prefix(1)).lowercased()
             
             if let gamesStartingWithKeyword = steamGamesHashTable[firstLetter] {
@@ -109,3 +108,4 @@ final class GameListViewModel: ObservableObject {
         }
     }
 }
+   
